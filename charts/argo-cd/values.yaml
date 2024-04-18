@@ -1,0 +1,19 @@
+argo-cd:
+  cm:
+    ## The name of tracking label used by Argo CD for resource pruning
+    ##
+    ## If we change this parameter from its default value, we will also have to
+    ## change our Kyverno policy accordingly.
+    ##
+    ## Ref: https://argo-cd.readthedocs.io/en/stable/user-guide/resource_tracking
+    ##
+    application.instanceLabelKey: argocd.argoproj.io/instance
+  dex:
+    enabled: false
+  notifications:
+    enabled: false
+  applicationSet:
+    enabled: false
+  server:
+    extraArgs:
+      - --insecure

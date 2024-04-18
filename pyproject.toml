@@ -1,0 +1,88 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "tutorial"
+dynamic = ["version"]
+description = 'Tutorial demonstrating how Kyverno can be leveraged to implement organization-specific policies in Kubernetes'
+readme = "README.md"
+requires-python = ">=3.8"
+license = "MIT"
+keywords = []
+authors = [
+  { name = "Uwe Stuehler", email = "ustuehler@growit.io" },
+]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: Implementation :: CPython",
+  "Programming Language :: Python :: Implementation :: PyPy",
+]
+dependencies = [
+  "click",
+  "pytest-kubernetes",
+  "pyyaml",
+]
+
+[project.urls]
+Documentation = "https://github.com/growit-io/kyverno-tutorial#readme"
+Issues = "https://github.com/growit-io/kyverno-tutorial/issues"
+Source = "https://github.com/growit-io/kyverno-tutorial"
+
+[project.scripts]
+tutorial = "tutorial.cli:tutorial"
+
+[tool.hatch.version]
+path = "src/tutorial/__about__.py"
+
+[tool.hatch.envs.default]
+path = ".hatch"
+dependencies = [
+  "coverage[toml]>=6.5",
+]
+[tool.hatch.envs.default.scripts]
+test = "pytest {args:tests}"
+test-cov = "coverage run -m pytest {args:tests}"
+cov-report = [
+  "- coverage combine",
+  "coverage report",
+]
+cov = [
+  "test-cov",
+  "cov-report",
+]
+
+[[tool.hatch.envs.all.matrix]]
+python = ["3.8", "3.9", "3.10", "3.11", "3.12"]
+
+[tool.hatch.envs.types]
+dependencies = [
+  "mypy>=1.0.0",
+]
+[tool.hatch.envs.types.scripts]
+check = "mypy --install-types --non-interactive {args:src/tutorial tests}"
+
+[tool.coverage.run]
+source_pkgs = ["src/tutorial", "tests"]
+branch = true
+parallel = true
+omit = [
+  "src/tutorial/__about__.py",
+]
+
+[tool.coverage.paths]
+kuverno_tutorial = ["src/tutorial", "*/kuverno-tutorial/src/tutorial"]
+tests = ["tests", "*/kuverno-tutorial/tests"]
+
+[tool.coverage.report]
+exclude_lines = [
+  "no cov",
+  "if __name__ == .__main__.:",
+  "if TYPE_CHECKING:",
+]

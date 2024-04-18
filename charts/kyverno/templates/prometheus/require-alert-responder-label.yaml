@@ -1,0 +1,33 @@
+{{- if and .Values.validations.enabled .Values.validations.requireAlertResponderLabel.enabled }}
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: require-alert-responder-label
+  annotations:
+    policies.kyverno.io/title: Alerts Require Responder Label
+    policies.kyverno.io/category: Prometheus
+    policies.kyverno.io/severity: medium
+spec:
+  validationFailureAction: Audit
+  background: true
+  rules:
+    - name: require-alert-responder-label
+      match:
+        all:
+          - resources:
+              kinds:
+                - PrometheusRule
+      validate:
+        message: "A 'responder' label is required on all alerts defined by PrometheusRule resources in this cluster."
+        anyPattern:
+          - spec:
+              groups:
+                - rules:
+                    - (alert): "?*"
+                      labels:
+                        responder: "?*"
+          - spec:
+              groups:
+                - rules:
+                    - X(alert): "null"
+{{- end }}

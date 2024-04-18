@@ -1,0 +1,4 @@
+## Labels to apply to all resources
+##
+commonLabels:
+  example.com/team: application-team

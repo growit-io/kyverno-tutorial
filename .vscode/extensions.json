@@ -1,0 +1,8 @@
+{
+    "recommendations": [
+        "vsls-contrib.codetour",
+        "ms-kubernetes-tools.vscode-kubernetes-tools",
+        "ms-python.python",
+        "chrisbibby.hide-git-ignored"
+    ]
+}

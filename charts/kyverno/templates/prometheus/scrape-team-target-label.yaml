@@ -1,0 +1,49 @@
+{{- if and .Values.mutations.enabled .Values.mutations.scrapeTeamTargetLabel.enabled }}
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: scrape-team-target-label
+  annotations:
+    policies.kyverno.io/title: Scrape Team Target Label
+    policies.kyverno.io/category: Prometheus
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      Team-managed resources in our organization must specify a responsible team
+      for development and operation in their `{{ .Values.teamLabel }}` label. This
+      policy ensures that Prometheus propagates the label from monitored `Service`
+      and `Pod` resources into all metric samples.
+spec:
+  rules:
+    - name: inject-pod-target-label
+      match:
+        any:
+          - resources:
+              kinds:
+                - PodMonitor
+      preconditions:
+        any:
+          - key: {{ .Values.teamLabel }}
+            operator: AllNotIn
+            value: '{{`{{ request.object.spec.podTargetLabels || [""] }}`}}'
+      mutate:
+        patchesJson6902: |-
+          - op: add
+            path: /spec/podTargetLabels/-
+            value: {{ .Values.teamLabel }}
+    - name: inject-target-label
+      match:
+        any:
+          - resources:
+              kinds:
+                - ServiceMonitor
+      preconditions:
+        any:
+          - key: {{ .Values.teamLabel }}
+            operator: AllNotIn
+            value: '{{`{{ request.object.spec.targetLabels || [""] }}`}}'
+      mutate:
+        patchesJson6902: |-
+          - op: add
+            path: /spec/targetLabels/-
+            value: {{ .Values.teamLabel }}
+{{- end }}

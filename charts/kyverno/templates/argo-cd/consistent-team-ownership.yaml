@@ -1,0 +1,50 @@
+{{- if and .Values.validations.enabled .Values.validations.consistentTeamOwnership.enabled }}
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: consistent-team-ownership
+  annotations:
+    policies.kyverno.io/title: Consistent Team Ownership
+    policies.kyverno.io/category: Argo
+    policies.kyverno.io/severity: medium
+    #policies.kyverno.io/subject: Label, Deployment
+    #kyverno.io/kyverno-version: 1.11.1
+    #kyverno.io/kubernetes-version: "1.27"
+    #policies.kyverno.io/description: >-
+    #  Argo CD applications in our organization must specify a responsible team
+    #  for development and operation in their `{{ .Values.teamLabel }}` label. This
+    #  policy propagates the label to resources created by the application,
+    #  including to Pod templates.
+spec:
+  rules:
+    - name: consistent-team-ownership
+      match:
+        any:
+          - resources:
+              kinds:
+                - Application
+      context:
+        # Unique name for the context variable under which the ConfigMap
+        # contents will be accessible in the validation section
+        - name: configmap
+          configMap:
+            # Name of the ConfigMap which will be looked up
+            name: "{{ .Release.Name }}-custom-policies"
+            # Namespace in which this ConfigMap is stored
+            namespace: "{{ .Release.Namespace }}"
+      validate:
+        message: >-
+          The value of the `a8s.io/owner` annotation must match one of the
+          following accepted values: {{`{{ configmap.data.owners | parse_yaml(@)
+          | items(@, 'key', 'value')[*].key | join(', ', @) }}`}}.  You must
+          either specify an accepted value for this annotation or have someone
+          add `{{`{{ request.object.metadata.annotations."a8s.io/owner" }}`}}`
+          as a new key to the YAML data in the `.data.owner` item of the {{
+          .Release.Namespace }}/{{ .Release.Name }} ConfigMap.
+        deny:
+          conditions:
+            any:
+              - key: '{{`{{request.object.metadata.annotations."a8s.io/owner" || ""}}`}}'
+                operator: AnyNotIn
+                value: "{{`{{configmap.data.owners | parse_yaml(@) | items(@, 'key', 'value')[*].key}}`}}"
+{{- end }}

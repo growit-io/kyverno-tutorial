@@ -1,0 +1,29 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "tutorial up",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "tutorial",
+            "args": ["up"]
+        },
+        {
+            "name": "tutorial up --production --force",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "tutorial",
+            "args": ["up --production --force"]
+        },
+        {
+            "name": "tutorial down",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "tutorial",
+            "args": ["down"]
+        }
+    ]
+}

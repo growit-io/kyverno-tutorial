@@ -1,0 +1,47 @@
+{{- if and .Values.mutations.enabled .Values.mutations.rewriteAlertRules.enabled }}
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: rewrite-alert-rules
+  annotations:
+    policies.kyverno.io/title: Rewrite Alert Rules
+    policies.kyverno.io/category: Prometheus
+    policies.kyverno.io/severity: medium
+spec:
+  rules:
+    - name: rewrite-alert-rules
+      match:
+        any:
+          - resources:
+              kinds:
+                - PrometheusRule
+      context:
+        - name: alert_expr_rewrite_rules
+          variable:
+            value:
+              - expr: kube_pod_
+                labels: pod,namespace
+                join: (example_com_team) kube_pod_labels
+      mutate:
+        foreach:
+          - list: alert_expr_rewrite_rules
+            foreach:
+              - list: "request.object.spec.groups[]"
+                foreach:
+                  - list: "element.rules"
+                    preconditions:
+                      all:
+                        - key: "{{`{{ element.alert || '' }}`}}"
+                          operator: NotEquals
+                          value: ""
+                        - key: "{{`{{ element.expr || '' }}`}}"
+                          operator: Equals
+                          value: "{{`*{{ element0.expr }}*`}}"
+                        - key: "{{`{{ element.expr || '' }}`}}"
+                          operator: NotEquals
+                          value: "{{`*{{ element0.join }}*`}}"
+                    patchesJson6902: |-
+                      - op: replace
+                        path: "{{`/spec/groups/{{ elementIndex1 }}/rules/{{ elementIndex2 }}/expr`}}"
+                        value: '{{`({{ element.expr }}) * on ({{ element0.labels }}) group_left {{ element0.join }}`}}'
+{{- end }}

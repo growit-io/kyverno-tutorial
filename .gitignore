@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.pyc
+
+# pytest
+/.pytest_cache/
+
+# coverage data
+/.coverage
+/.coverage.*
+
+# Hatch
+/dist/
+
+# Helm
+/charts/*/charts
+/charts/*/Chart.lock
+
+# demo
+/kubeconfig

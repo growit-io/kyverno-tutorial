@@ -1,0 +1,23 @@
+{
+    "terminal.integrated.env.linux": {
+        "KUBECONFIG": "${workspaceFolder}/kubeconfig"
+    },
+    "terminal.integrated.env.osx": {
+        "KUBECONFIG": "${workspaceFolder}/kubeconfig"
+    },
+    "terminal.integrated.env.windows": {
+        "KUBECONFIG": "${workspaceFolder}/kubeconfig"
+    },
+    "python.testing.pytestArgs": [
+        "tests"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true,
+    "vs-kubernetes": {
+        "vs-kubernetes.kubeconfig": "${workspaceFolder}/kubeconfig"
+    },
+    "explorer.excludeGitIgnore": true,
+    "codetour.promptForWorkspaceTours": true,
+    "editor.minimap.enabled": false,
+    "comments.openView": "never"
+}

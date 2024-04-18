@@ -1,0 +1,18 @@
+{
+  "image": "mcr.microsoft.com/devcontainers/universal:2",
+  "onCreateCommand": [
+    "sh",
+    "-c",
+    "go install sigs.k8s.io/kind@v0.22.0 && pipx install hatch"
+  ],
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "vsls-contrib.codetour",
+        "ms-kubernetes-tools.vscode-kubernetes-tools",
+        "chrisbibby.hide-git-ignored",
+        "ms-python.python"
+      ]
+    }
+  }
+}

@@ -1,0 +1,82 @@
+kube-prometheus-stack:
+
+  prometheus:
+    prometheusSpec:
+      # Changed from the default value of true to handle ServiceMonitor
+      # resources in all namespaces, such as the "default" namespace that
+      # is used in our guestbook application.
+      serviceMonitorSelectorNilUsesHelmValues: false
+      # Changed from the default value of true to handle PodMonitor
+      # resources in all namespaces, such as the "default" namespace that
+      # is used in our guestbook application.
+      podMonitorSelectorNilUsesHelmValues: false
+
+  kube-state-metrics:
+    # Ingest our custom team ownership label for all resource types known
+    # to kube-state-metrics.
+    metricLabelsAllowlist:
+      - "*=[example.com/team]"
+    prometheus:
+      monitor:
+        metricRelabelings:
+          # kube-state-metrics prefixes label labels with "label_"... :)
+          # The targetLabels for a ServiceMonitor, for example, don't cause
+          # this to happen and we should be consistent, so drop the prefix.
+          - action: labelmap
+            regex: label_(example_com_.+)
+            replacement: $1
+
+  defaultRules:
+    additionalAggregationLabels:
+      - example_com_team
+    additionalRuleLabels:
+      responder: '{{ or $labels.example_com_team "platform-team" }}'
+    disabled:
+      # We need to define our own version of the alert in order to include our
+      # custom team label in the query expression.
+      TargetDown: true
+  additionalPrometheusRulesMap:
+    overrides:
+      groups:
+        - name: general
+          rules:
+            - alert: TargetDown
+              expr: |
+                100 * (
+                  count by (example_com_team, cluster, job, namespace, service) (up == 0) /
+                  count by (example_com_team, cluster, job, namespace, service) (up)
+                ) > 10
+              for: 10m
+              labels:
+                responder: '{{ or $labels.example_com_team "platform-team" }}'
+                severity: warning
+              annotations:
+                description: '{{ printf "%.4g" $value }}% of the {{ $labels.job }}/{{ $labels.service }} targets in {{ $labels.namespace }} namespace are down.'
+                runbook_url: https://runbooks.prometheus-operator.dev/runbooks/general/targetdown
+                summary: One or more targets are unreachable.
+
+  # We could label all resources of this Helm chart as managed by the platform
+  # team, but it isn't strictly necessary with our solution since we can rely on
+  # the template expression for "defaultRules.additionalRuleLabels.responder" to
+  # fall back to "platform-team" when an alert doesn't have this team label.
+  #commonLabels:
+  #  example.com/team: platform-team
+
+  #alertmanager:
+  #  serviceMonitor:
+  #    relabelings:
+  #      - action: labelmap
+  #        regex: __meta_kubernetes_.+_label_(example_com_.+)
+  #        replacement: $1
+  #kubeEtcd:
+  #  serviceMonitor:
+  #    relabelings:
+  #      - action: labelmap
+  #        regex: __meta_kubernetes_.+_label_(example_com_.+)
+  #        replacement: $1
+
+  # XXX: not necessary for this tutorial, but perhaps for deployment-related alerts, in which case joins in the alert query expression are also needed
+  #kube-state-metrics:
+  #  metricLabelsAllowlist:
+  #    - "pods=[example.com/team]"
+  #    - "services=[example.com/team]"

@@ -1,0 +1,30 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: {{ .Release.Name }}
+  namespace: argocd
+  {{- if .Values.commonLabels }}
+  labels:
+    {{- toYaml .Values.commonLabels | nindent 4 }}
+  {{- end }}
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  destination:
+    namespace: {{ .Release.Namespace }}
+    server: https://kubernetes.default.svc
+  project: default
+  source:
+    path: helm-guestbook
+    repoURL: https://github.com/growit-io/argocd-example-apps.git
+    targetRevision: HEAD
+    helm:
+      valuesObject:
+        serviceMonitor:
+          enabled: true
+  syncPolicy:
+    automated:
+      prune: true
+      allowEmpty: false
+    syncOptions:
+      - PrunePropagationPolicy=foreground

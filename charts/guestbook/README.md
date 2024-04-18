@@ -1,0 +1,5 @@
+# Guestbook Application Chart
+
+This Helm chart indirectly installs an [example guestbook application Helm chart](https://github.com/growit-io/argocd-example-apps/tree/master/helm-guestbook) via Argo CD. The example Helm chart has been slightly [altered](https://github.com/argoproj/argocd-example-apps/compare/master...growit-io:argocd-example-apps:master) to include an optional `ServiceMonitor` resource.
+
+The service monitor will not actually work, because the example application doesn't actually expose Prometheus metrics, but it will cause the `TargetDown` alert to fire, making for a nice demonstration of how the [built-in rules](https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack/templates/prometheus/rules-1.14) from the [kube-prometheus-stack](https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack#readme) must be slightly altered to support our ownership policy.

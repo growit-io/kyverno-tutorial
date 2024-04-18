@@ -1,0 +1,6 @@
+"platform-team":
+  opsgenie_team: platform
+  slack_channel: "#platform-team"
+"application-team":
+  opsgenie_team: application
+  slack_channel: "#platform-team"

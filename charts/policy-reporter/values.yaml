@@ -1,0 +1,11 @@
+policy-reporter:
+  kyvernoPlugin:
+    enabled: true
+    #metrics:
+    #  enabled: false
+    #rest:
+    #  enabled: false
+  ui:
+    enabled: true
+    plugins:
+      kyverno: true
