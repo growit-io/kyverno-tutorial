@@ -16,6 +16,40 @@ kube-prometheus-stack:
     # to kube-state-metrics.
     metricLabelsAllowlist:
       - "*=[example.com/team]"
+      # This doesn't work, because KSM needs to be told explicitly how to
+      # monitor custom resources. See `customResourceState` below.
+      #- "servicemonitors=[example.com/team]"
+
+    # Define custom metrics for CRDs.
+    customResourceState:
+      enabled: true
+      config:
+        kind: CustomResourceStateMetrics
+        spec:
+          resources:
+            - groupVersionKind:
+                group: monitoring.coreos.com
+                kind: ServiceMonitor
+                version: "*"
+              labelsFromPath:
+                namespace: [metadata, namespace]
+                name: [metadata, name]
+              metrics:
+                - name: "labels"
+                  help: "Kubernetes labels for ServiceMonitors converted to Prometheus labels."
+                  each:
+                    type: Info
+                    info:
+                      path: [metadata, labels]
+                      labelsFromPath:
+                        label_example_com_team: ["example.com/team"]
+
+    rbac:
+      extraRules:
+        - apiGroups: ["monitoring.coreos.com"]
+          resources: ["servicemonitors"]
+          verbs: ["list", "watch"]
+
     prometheus:
       monitor:
         metricRelabelings:
