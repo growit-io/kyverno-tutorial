@@ -133,7 +133,7 @@
       "pattern": "name: inject-target-label"
     },
     {
-      "description": "With our policies ready, upgrade our deployment to install and apply them across the board. Use the commands:\n\n>> helm uninstall guestbook\n\n>> hatch run tutorial up --production --force kyverno monitoring guestbook\n\nThis upgrades relevant Helm charts in the correct order with parameters from `values.yaml` and `values-production.yaml` merged.",
+      "description": "With our policies ready, upgrade our deployment to install and apply them across the board. Use the commands:\n\n>> helm uninstall -n default guestbook\n\n>> hatch run tutorial up --production --force kyverno monitoring guestbook\n\nThis upgrades relevant Helm charts in the correct order with parameters from `values.yaml` and `values-production.yaml` merged.",
       "title": "Deploy Final Working Configuration",
       "file": "charts/README.md",
       "line": 1,
