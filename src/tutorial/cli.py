@@ -156,10 +156,16 @@ dependencies = [
         },
     },
     {
-        "title": "Kyverno & Policies",
+        "title": "Kyverno",
         "release": "kyverno",
         "namespace": "kyverno",
         "chart_name": "kyverno"
+    },
+    {
+        "title": "Kyverno Policies",
+        "release": "kyverno-policies",
+        "namespace": "kyverno",
+        "chart_name": "kyverno-policies"
     },
     {
         "title": "Policy Reporter",

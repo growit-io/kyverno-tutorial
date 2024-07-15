@@ -1,0 +1,9 @@
+mutations:
+  propagateApplicationTeamLabel:
+    enabled: true
+  scrapeTeamTargetLabel:
+    enabled: true
+
+validations:
+  requireAlertResponderLabel:
+    enabled: true

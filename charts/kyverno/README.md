@@ -1,6 +1,6 @@
-# Kyverno & Policies Wrapper Chart
+# Kyverno Wrapper Chart
 
-This Helm chart is a wrapper of the official [Kyverno Helm chart](https://github.com/kyverno/kyverno/tree/main/charts/kyverno#readme). In the tutorial, we'll first deploy it without policies from [values.yaml](values.yaml), and then with necessary policies enabled via [values-production.yaml](values-production.yaml) for the final working configuration.
+This Helm chart is a wrapper of the official [Kyverno Helm chart](https://github.com/kyverno/kyverno/tree/main/charts/kyverno#readme). In the tutorial, we'll deploy it only with from [values.yaml](values.yaml) for both, the initial and the final working configuration.
 
 ## Why Kyverno?
 

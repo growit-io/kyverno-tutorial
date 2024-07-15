@@ -4,10 +4,10 @@ mutations:
   enabled: true
 
   propagateApplicationTeamLabel:
-    enabled: true
+    enabled: false
 
   scrapeTeamTargetLabel:
-    enabled: true
+    enabled: false
 
   rewriteAlertRules:
     enabled: false
@@ -19,10 +19,7 @@ validations:
     enabled: false
 
   requireAlertResponderLabel:
-    enabled: true
-
-# Kyverno can be installed with default parameters for this tutorial.
-kyverno: {}
+    enabled: false
 
 # Baseline policies are disabled initially, since they aren't relevant
 # for this tutorial, but you can disable them if you want to experment
