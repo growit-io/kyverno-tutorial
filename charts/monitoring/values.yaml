@@ -1,12 +1,15 @@
+# Default values for kube-prometheus-stack are documented here:
+# https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-prometheus-stack/values.yaml
 kube-prometheus-stack:
 
   prometheus:
     prometheusSpec:
-      # Changed from the default value of true to handle ServiceMonitor
-      # resources in all namespaces, such as the "default" namespace that
-      # is used in our guestbook application.
+      # The following values are changed from their default value of `true`
+      # lets the Prometheus Operator handle ScrapeConfig, ServiceMonitor,
+      # PodMonitor, and Probe resources in all namespaces, including the
+      # "default" namespace that is used in our guestbook application, and
+      # regardless of the labels on those resources.
+      scrapeConfigSelectorNilUsesHelmValues: false
       serviceMonitorSelectorNilUsesHelmValues: false
-      # Changed from the default value of true to handle PodMonitor
-      # resources in all namespaces, such as the "default" namespace that
-      # is used in our guestbook application.
       podMonitorSelectorNilUsesHelmValues: false
+      probeSelectorNilUsesHelmValues: false

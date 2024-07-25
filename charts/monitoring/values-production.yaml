@@ -1,16 +1,5 @@
 kube-prometheus-stack:
 
-  prometheus:
-    prometheusSpec:
-      # Changed from the default value of true to handle ServiceMonitor
-      # resources in all namespaces, such as the "default" namespace that
-      # is used in our guestbook application.
-      serviceMonitorSelectorNilUsesHelmValues: false
-      # Changed from the default value of true to handle PodMonitor
-      # resources in all namespaces, such as the "default" namespace that
-      # is used in our guestbook application.
-      podMonitorSelectorNilUsesHelmValues: false
-
   kube-state-metrics:
     # Ingest our custom team ownership label for all resource types known
     # to kube-state-metrics.
