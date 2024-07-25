@@ -58,6 +58,9 @@ def helm_install(
     if create_namespace:
         args.append("--create-namespace")
 
+    if os.path.isfile(f"{chart_dir}/values.yaml"):
+        args.extend([f"-f", f"{chart_dir}/values.yaml"])
+
     if production and os.path.isfile(f"{chart_dir}/values-production.yaml"):
         args.extend([f"-f", f"{chart_dir}/values-production.yaml"])
 
@@ -82,6 +85,9 @@ def helm_upgrade(
 
     if namespace:
         args.append(f"--namespace={namespace}")
+
+    if os.path.isfile(f"{chart_dir}/values.yaml"):
+        args.extend([f"-f", f"{chart_dir}/values.yaml"])
 
     if production and os.path.isfile(f"{chart_dir}/values-production.yaml"):
         args.extend([f"-f", f"{chart_dir}/values-production.yaml"])
