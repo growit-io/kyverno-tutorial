@@ -79,12 +79,12 @@
     },
     {
       "description": "The Kyverno `ClusterPolicy` resource allows users to define cluster-wide policies for enforcing governance and compliance within Kubernetes clusters; for more details, refer to the [Kyverno documentation](https://kyverno.io/docs/kyverno-policies/).",
-      "file": "charts/kyverno/templates/argo-cd/propagate-application-team-label.yaml",
+      "file": "charts/kyverno-policies/templates/argo-cd/propagate-application-team-label.yaml",
       "pattern": "kind: ClusterPolicy"
     },
     {
-      "description": "This policy ensures that our custom ownership label, `example.com/team`, is propagated from an Argo CD `Application` object to all resources belonging to that application. In some cases, it will also cascade to indirectly managed resources, such as `Pods` created by a `Deployment`.\n",
-      "file": "charts/kyverno/templates/argo-cd/propagate-application-team-label.yaml",
+      "description": "This policy ensures that our custom ownership label, `example.com/team`, is propagated from an Argo CD `Application` object to all resources belonging to that application. In some cases, it will also cascade to indirectly managed resources, such as `Pods` created by a `Deployment`.",
+      "file": "charts/kyverno-policies/templates/argo-cd/propagate-application-team-label.yaml",
       "pattern": "name: propagate-application-team-label",
       "selection": {
         "start": {
@@ -99,41 +99,41 @@
     },
     {
       "description": "The field `policies.kyverno.io/description` and other metadata fields can be used to document the policy and tools like [Policy Reporter](https://kyverno.github.io/policy-reporter/) will use this information to present policies and reports in a structured and human-friendly way.",
-      "file": "charts/kyverno/templates/argo-cd/propagate-application-team-label.yaml",
+      "file": "charts/kyverno-policies/templates/argo-cd/propagate-application-team-label.yaml",
       "pattern": "policies.kyverno.io/description"
     },
     {
       "description": "Since this policy is defined as a template in a Helm chart and many expressions in Kyverno policies use a similar syntax based on Go template, we must escape expressions intended for Kyverno using the \"{{\\`...\\`}}\" syntax, so that they are not accidentally interpreted by Helm.\n\nHowever, we can still embed Helm parameters if we want to make the policy customizable at installation time. In this policy, we mainly wish to make the name of the label which carries the team ownership information customizable.",
-      "file": "charts/kyverno/templates/argo-cd/propagate-application-team-label.yaml",
+      "file": "charts/kyverno-policies/templates/argo-cd/propagate-application-team-label.yaml",
       "pattern": "{{`.+`}}"
     },
     {
       "description": "The first rule of this policy propagates our team ownership label from Argo CD apps to their *directly* managed resources. This rule matches *any* kind of Kubernetes resource, as long as it has an `argocd.argoproj.io/instance` label with a non-empty value to indicate that it is a *tracked resource* that is part of an Argo CD application.",
-      "file": "charts/kyverno/templates/argo-cd/propagate-application-team-label.yaml",
+      "file": "charts/kyverno-policies/templates/argo-cd/propagate-application-team-label.yaml",
       "pattern": "name: copy-app-team-label-to-instance"
     },
     {
       "description": "The second rule of this policy implements propagation of the team ownership label from directly managed (tracked) resources to indirectly managed resources, specifically from any known resource that creates `Pods` from templates. This is necessary as, for example, a label on a `Pod` controller such as a `Deployment` resource is not automatically inherited by `Pods` created by the controller, unless the respective label is also copied to the `.spec.template.metadata.labels` property of the controller resource.",
-      "file": "charts/kyverno/templates/argo-cd/propagate-application-team-label.yaml",
+      "file": "charts/kyverno-policies/templates/argo-cd/propagate-application-team-label.yaml",
       "pattern": "name: copy-team-label-to-pod-template"
     },
     {
       "description": "Our next policy ensures that all `ServiceMonitor` and `PodMonitor` resources are configured to make Prometheus transfer the scraped target's team ownership label, `example.com/team` in this tutorial, onto the ingested metrics. The ingested metrics will record this information in the `example_com_team` label, because \".\" and \"/\" are special characters that aren't allowed in Prometheus metric names.",
-      "file": "charts/kyverno/templates/prometheus/scrape-team-target-label.yaml",
+      "file": "charts/kyverno-policies/templates/prometheus/scrape-team-target-label.yaml",
       "pattern": "name: scrape-team-target-label"
     },
     {
       "description": "The first rule of this policy targets all `PodMonitor` resources in the cluster and makes sure that they always have a `podTargetLabels` property which includes our team ownership label.\n\nTo describe this property, you can use the command:\n\n>> kubectl explain PodMonitor.spec.podTargetLabels",
-      "file": "charts/kyverno/templates/prometheus/scrape-team-target-label.yaml",
+      "file": "charts/kyverno-policies/templates/prometheus/scrape-team-target-label.yaml",
       "pattern": "name: inject-pod-target-label"
     },
     {
       "description": "The second rule is only a small variation of first rule. It targets all `ServiceMonitor` resources in the cluster and makes sure that they always have a `targetLabels` property which includes our team ownership label.\n\nTo describe this property, you can use the command:\n\n>> kubectl explain ServiceMonitor.spec.targetLabels",
-      "file": "charts/kyverno/templates/prometheus/scrape-team-target-label.yaml",
+      "file": "charts/kyverno-policies/templates/prometheus/scrape-team-target-label.yaml",
       "pattern": "name: inject-target-label"
     },
     {
-      "description": "With our policies ready, upgrade our deployment to install and apply them across the board. Use the commands:\n\n>> helm uninstall -n default guestbook\n\n>> hatch run tutorial up --production --force kyverno monitoring guestbook\n\nThis upgrades relevant Helm charts in the correct order with parameters from `values.yaml` and `values-production.yaml` merged.",
+      "description": "With our policies ready, upgrade our deployment to install and apply them across the board. Use the commands:\n\n>> helm uninstall -n default guestbook\n\n>> hatch run tutorial up --production --force kyverno-policies monitoring guestbook\n\nThis upgrades relevant Helm charts in the correct order with parameters from `values.yaml` and `values-production.yaml` merged.",
       "title": "Deploy Final Working Configuration",
       "file": "charts/README.md",
       "line": 1,
