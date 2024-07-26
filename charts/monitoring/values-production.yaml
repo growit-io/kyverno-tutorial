@@ -1,5 +1,11 @@
 kube-prometheus-stack:
 
+  prometheus:
+    prometheusSpec:
+      additionalConfig:
+        podTargetLabels:
+          - example.com/team
+
   kube-state-metrics:
     # Ingest our custom team ownership label for all resource types known
     # to kube-state-metrics.
@@ -42,22 +48,38 @@ kube-prometheus-stack:
     prometheus:
       monitor:
         metricRelabelings:
-          # kube-state-metrics prefixes label labels with "label_"... :)
-          # The targetLabels for a ServiceMonitor, for example, don't cause
-          # this to happen and we should be consistent, so drop the prefix.
+          # kube-state-metrics prefixes resource label metric labels with
+          # "label_", but this doesn't happen with `podTargetLabels` on a
+          # PodMonitor or ServiceMonitor. Since it is fairly reundant, to
+          # drop this prefix feels somewhat more aesthetically pleasing.
           - action: labelmap
             regex: label_(example_com_.+)
             replacement: $1
+          - action: labeldrop
+            regex: label_example_com_.+
 
   defaultRules:
     additionalAggregationLabels:
       - example_com_team
-    additionalRuleLabels:
-      responder: '{{ or $labels.example_com_team "platform-team" }}'
+
+    ## Setting a dynamic responder for alerts could be as simple as this, but
+    ## `additionalRuleLabels` has the side-effect of adding this label verbatim
+    ## to recorded metrics, too. Adding the label to `additionalRuleGroupLabels`
+    ## for each alert group individually thus seems to be the better solution.
+    ##
+    #additionalRuleLabels:
+    #  responder: '{{ or $labels.example_com_team "platform-team" }}'
+
+    additionalRuleGroupLabels:
+      kubernetesResources:
+        responder: '{{ or $labels.example_com_team "platform-team" }}'
+      # ...
+
     disabled:
       # We need to define our own version of the alert in order to include our
       # custom team label in the query expression.
       TargetDown: true
+
   additionalPrometheusRulesMap:
     overrides:
       groups:
@@ -97,9 +119,3 @@ kube-prometheus-stack:
   #      - action: labelmap
   #        regex: __meta_kubernetes_.+_label_(example_com_.+)
   #        replacement: $1
-
-  # XXX: not necessary for this tutorial, but perhaps for deployment-related alerts, in which case joins in the alert query expression are also needed
-  #kube-state-metrics:
-  #  metricLabelsAllowlist:
-  #    - "pods=[example.com/team]"
-  #    - "services=[example.com/team]"

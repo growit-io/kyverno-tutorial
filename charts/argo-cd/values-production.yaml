@@ -1,0 +1,24 @@
+argo-cd:
+  controller:
+    metrics:
+      enabled: true
+
+      serviceMonitor:
+        enabled: true
+        # Consistent with our configuration of Kube State Metrics, we also
+        # drop the "label_" prefix from metric labels exported by Argo CD,
+        # mainly for cosmetic reasons. Our `example.com/team` label would
+        # thus become `argocd_app_labels{example_com_team="..."}`.
+        metricRelabelings:
+          - action: labelmap
+            regex: label_(.+)
+            replacement: $1
+          - action: labeldrop
+            regex: label_.+
+
+      # Enable recording application ownership information in the metric
+      # `argocd_app_labels`.
+      applicationLabels:
+        enabled: true
+        labels:
+          - example.com/team
